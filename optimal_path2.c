@@ -29,6 +29,61 @@ int max_dist(const int *dist, int *spt_set)
  
     return max_idx;
 }
+
+void dijkstra_min_once(int graph[VERTEX][VERTEX], int src,int dest,int visited[])
+{
+    int dist[VERTEX];
+    int spt_set[VERTEX];
+    int parent[VERTEX];
+    parent[src]  = -1; 
+    int i;
+    for (i = 0; i < VERTEX; i++) {
+        dist[i]    = INT_MAX;       /* cant reach will be INT_MAX */
+        spt_set[i] = 0;     
+    }
+ 
+    /* distance of source vertex to itself always 0 */
+    dist[src] = 0;
+ 
+    /* find shortest path for all vertices */
+    for (i = 0; i < VERTEX-1; i++) {
+        /* pick minimum vertex of those vertices not processed
+         *  u is always equal to src in the first call of min_dist()
+         *  */
+        int u = min_dist(dist, spt_set);
+ 
+        /* mark the picked vertex as processed */
+        spt_set[u] = 1;
+ 
+        /* if current unprocessed vertex is unreachable
+         *  for those disconnected vertex
+         * */
+        if (dist[u] == INT_MAX) continue;
+ 
+        /* update dist[] of adjacent vertices of the picked vertex */
+        int v;
+        for (v = 0; v < VERTEX; v++)
+            /* update dist[v] only if
+             *  1) there is a edge from u to v
+             *  2) it's not in spt_set[]
+             *  3) distance of path from src to v through u
+             *    is smaller than current value of dist[v]
+             * */
+            if (graph[u][v] && spt_set[v] == 0 &&
+                    dist[u] + graph[u][v] < dist[v])
+            {
+                dist[v]   = dist[u] + graph[u][v];
+                parent[v] = u;
+            }
+    }
+    /* print the constructed distance array */
+    print_spt(graph,dist, src,dest, parent);
+}
+
+
+
+
+
 /* print path from source v using parent array */
 void print_path(int graph[VERTEX][VERTEX],const int *parent, int v)
 {
@@ -408,6 +463,7 @@ int i,j;
     switch(choice)
     {
         case 1:
+            int visited[vertex];
             printf("Suggesting path for travelers\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
@@ -418,18 +474,16 @@ int i,j;
             printf("Enter 1 for the vertices you want to visit between the source and destiantion and 0 for nodes which are not needed\n");
             for(i=0;i<vertex;i++)
             {
+                ordered_loc[i]=-1;
+                visited[vertex]=0;
                 printf("\n%d =>");
                 scanf("%d",&visit_loc[i]);
             }
-            for(i=0;i<vertex;i++)
-            {
-				ordered_loc[i]=-1;
-            }
             dfs(graph1,visit_loc,ordered_loc,source);
-            dijkstra_min(graph1,source,ordered_loc[0]);
+            dijkstra_min_once(graph1,source,ordered_loc[0],visited);
             for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
             {
-                dijkstra_min(graph1,ordered_loc[i],ordered_loc[i+1]);
+                dijkstra_min_once(graph1,ordered_loc[i],ordered_loc[i+1],visited);
             }
             dijkstra_min(graph1,ordered_loc[i],destination);
             break;
