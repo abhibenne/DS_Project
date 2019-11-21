@@ -50,7 +50,6 @@ popular* newPopularity(int ind)
 }   
 
 
-
 struct node* createNode(int v,int w)
 {
     struct node* newNode=(struct node*)malloc(sizeof(struct node));
@@ -92,13 +91,34 @@ void printGraph(struct Graph* graph)
     for (v = 0; v < graph->numVertices; v++)
     {
         struct node* temp = graph->adjLists[v];
-        printf("\n Adjacency list of vertex %d\n ", v);
-        while (temp)
+        printf("Adjacency list of vertex %d can be represented as:\n", v);
+        while (temp->link)
         {
             printf("%d -> ", temp->vertex);
             temp = temp->link;
         }
+        printf("%d", temp->vertex);
         printf("\n");
+    }
+}
+
+void printGraphwithWeights(struct Graph* graph)
+{
+    int v;
+    for (v = 0; v < graph->numVertices; v++)
+    {
+        struct node* temp = graph->adjLists[v];
+        if(!temp)
+        {
+            printf("No links yet for vertex %d\n",v);
+            continue;
+        }
+        printf("Adjacency list of vertex %d is displayed below:\n", v);
+        while (temp)
+        {
+            printf("Vertex:%d Weight:%d\n", temp->vertex,temp->weight);
+            temp = temp->link;
+        }
     }
 }
 
@@ -479,7 +499,7 @@ int i,j;
     printGraph(graph1);
     if(choice1==1)
     {
-        printf("\nBus route graph\n");
+        printf("\nPublic Trasnport graph\n");
         printGraph(graph2);
     }
     popular* po[vertex];
@@ -576,7 +596,7 @@ int i,j;
             }
             else
             {
-                printf("Bus route not inserted.Insert it now? (1 for yes, 0 for no)\n");
+                printf("Public transport route not inserted.Insert it now? (1 for yes, 0 for no)\n");
                 scanf("%d",&choice1);
                 if(choice1==1)
                 {
@@ -623,11 +643,11 @@ int i,j;
             break;
         case 6:
             printf("\nDistance graph\n");
-            printGraph(graph1);
+            printGraphwithWeights(graph1);
             if(choice1==1)
             {
                 printf("\nBus route graph\n");
-                printGraph(graph2);
+                printGraphwithWeights(graph2);
             }
             break;
         default:
