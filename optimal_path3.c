@@ -1,20 +1,71 @@
 #include <stdio.h>
 #include <limits.h>
+#include <stdlib.h>
  
-struct review
+struct node
 {
-    char r[1000];
-    int rating;
-    struct review* link; 
-}
-struct Popularity
+    int vertex;
+    int weight;
+    struct node* link;
+};
+typedef struct node node;
+struct Graph
 {
-    struct review* head;
-    int index;
-    int number_of_reviews;
+    int numVertices;
+    struct node** adjLists;
+};
+
+struct node* createNode(int v,int w)
+{
+    struct node* newNode=malloc(sizeof(struct node));
+    newNode->vertex=v;
+    newNode->weight=w;
+    newNode->link=NULL;
+    return newNode;
 }
-typedef struct Popularity popular;
-typedef struct review re;
+ 
+struct Graph* createGraph(int vertices)
+{
+    struct Graph* graph = malloc(sizeof(struct Graph));
+    graph->numVertices = vertices;
+ 
+    graph->adjLists = malloc(vertices * sizeof(struct node*));
+ 
+    int i;
+    for (i = 0; i < vertices; i++)
+        graph->adjLists[i] = NULL;
+ 
+    return graph;
+}
+ 
+void addEdge(struct Graph* graph, int src, int dest,int weight)
+{
+    //undirected
+    struct node* newNode = createNode(dest,weight);
+    newNode->link = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+ 
+    newNode = createNode(src,weight);
+    newNode->link = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+ 
+void printGraph(struct Graph* graph)
+{
+    int v;
+    for (v = 0; v < graph->numVertices; v++)
+    {
+        struct node* temp = graph->adjLists[v];
+        printf("\n Adjacency list of vertex %d\n ", v);
+        while (temp)
+        {
+            printf("%d -> ", temp->vertex);
+            temp = temp->link;
+        }
+        printf("\n");
+    }
+}
+
 /* number of vertices in graph */
 int VERTEX=0;
 
@@ -307,8 +358,21 @@ void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX]
 	}
 }
 
+int FindWeight(struct Graph* graph,int source,int destination)
+{
+    node* temp=graph->adjLists[source];
+    while(temp)
+    {
+        if(temp->vertex==destination)
+        {
+            return temp->weight;
+        }
+        temp=temp->link;
+    }
+    return 0;
+}
 
-void DFS(int graph[VERTEX][VERTEX],int visited[],int visit[],int order[],int source,int index)
+void DFS(struct Graph* graph,int visited[],int visit[],int order[],int source,int index)
 {
     visited[source]=1;
     if(visit[source]==1)
@@ -317,13 +381,13 @@ void DFS(int graph[VERTEX][VERTEX],int visited[],int visit[],int order[],int sou
     }
     int j;
     for(j=0;j<VERTEX;j++)
-       if(!visited[j] && graph[source][j]!=0)
+       if(!visited[j] && FindWeight(graph,source,j)!=0)
        {
             DFS(graph,visited,visit,order,j,index);
        }
 }
  
-void dfs(int graph[VERTEX][VERTEX],int visit[],int order[],int source)
+void dfs(struct Graph* graph,int visit[],int order[],int source)
 {
     int j;
     int visited[VERTEX];
@@ -341,11 +405,9 @@ int i,j;
     printf("Let us first create the graph, enter the number of vertices\n");
     int vertex,weight,prof,p; scanf("%d",&vertex);
     int visit_loc[vertex],ordered_loc[vertex];
-    int graph1[vertex][vertex];
-    int graph3[vertex][vertex];
     VERTEX=vertex;
-    initialize(graph1,vertex);
-    initialize(graph3,vertex);
+    struct Graph* graph1 = createGraph(vertex);
+    struct Graph* graph2 = createGraph(vertex);
     while(1)
     {
         printf("Enter vertexes for edges and -1 and -1 for exit\n");
@@ -354,8 +416,7 @@ int i,j;
             break;
         printf("Enter distance");
         scanf("%d",&weight);
-        graph1[i][j]=weight;
-        graph1[j][i]=weight;
+        addEdge(graph1, i, j,weight);
     }
     int choice1,choice;
     printf("Do you want to add a bus/train route (1-yes or 0-no)\n");
@@ -371,16 +432,15 @@ int i,j;
             	break;
         	printf("Enter distance\n");
         	scanf("%d",&dist);
-        	graph3[i][j]=dist;
-        	graph3[j][i]=dist;
+            addEdge(graph2, i, j,weight);
 		}
     }
     printf("Distance graph\n");
-    display(graph1,vertex);
+    printGraph(graph1);
     if(choice1==1)
     {
         printf("\nBus route graph\n");
-        display(graph3,vertex);
+        printGraph(graph2);
     }
     int source,destination,num_travelers;int visited[vertex];
     printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
@@ -408,15 +468,16 @@ int i,j;
                 scanf("%d",&visit_loc[i]);
             }
             dfs(graph1,visit_loc,ordered_loc,source);int ref;
-            dijkstra_min_once(graph1,source,ordered_loc[0],visited);
-            for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
-            {
-                if(visited[ordered_loc[i+1]]==0)
-                dijkstra_min_once(graph1,ordered_loc[i],ordered_loc[i+1],visited);
-            }
-            dijkstra_min(graph1,ordered_loc[i],destination);
+            printf("%d",FindWeight(graph1,1,2));
+            // dijkstra_min_once(graph1,source,ordered_loc[0],visited);
+            // for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
+            // {
+            //     if(visited[ordered_loc[i+1]]==0)
+            //     dijkstra_min_once(graph1,ordered_loc[i],ordered_loc[i+1],visited);
+            // }
+            // dijkstra_min(graph1,ordered_loc[i],destination);
             break;
-        case 2:
+       /* case 2:
             printf("Shortest route only based on distance and traffic\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
@@ -436,8 +497,8 @@ int i,j;
             scanf("%d %d",&source,&destination);
             printf("Enter altered weight\n");
             scanf("%d",&new_weight);
-            graph1[source][destination]=new_weight;
-            graph1[destination][source]=new_weight;
+//            graph1[source][destination]=new_weight;
+//            graph1[destination][source]=new_weight;
             printf("modified graph\n");
             display(graph1,VERTEX);
             break;
@@ -499,7 +560,7 @@ int i,j;
                 printf("\nBus route graph\n");
                 display(graph3,vertex);
             }
-            break;
+            break;*/
         default:
             printf("wrong option\n");
             break;
