@@ -15,9 +15,44 @@ struct Graph
     struct node** adjLists;
 };
 
+ 
+struct review
+{
+    char r[1000];
+    int rating;
+    struct review* link; 
+};
+typedef struct review review;
+struct Popularity
+{
+    struct review* head;
+    int index;
+    int number_of_reviews;
+};
+typedef struct Popularity popular;
+
+review* newReview(char *re,int rate)
+{
+    review* new=(review*)malloc(sizeof(review));
+    new->r=re;
+    new->rating=rate;
+    new->link=NULL;
+    return new;
+}
+
+popular* newPopularity(int ind)
+{
+    popular* new=(popular*)malloc(sizeof(popular));
+    new->head=NULL;
+    new->index=ind;
+    new->number_of_reviews=0;
+}   
+
+
+
 struct node* createNode(int v,int w)
 {
-    struct node* newNode=malloc(sizeof(struct node));
+    struct node* newNode=(struct node*)malloc(sizeof(struct node));
     newNode->vertex=v;
     newNode->weight=w;
     newNode->link=NULL;
@@ -66,8 +101,8 @@ void printGraph(struct Graph* graph)
     }
 }
 
-/* number of vertices in graph */
-int VERTEX=0;
+/* number of vertices in the graph */
+int VERTEX;
 
 int min_dist(const int *dist, int *spt_set)
 {
@@ -125,7 +160,7 @@ void dijkstra_min_once(int graph[VERTEX][VERTEX], int src,int dest,int visited[]
     parent[src]  = -1; 
     int i;
     for (i = 0; i < VERTEX; i++) {
-        dist[i]    = INT_MAX;       /* cant reach will be INT_MAX */
+        dist[i]    = INT_MAX;     
         spt_set[i] = 0;     
     }
  
@@ -161,18 +196,15 @@ void AlterWeight(struct Graph* graph,int source,int destination,int new)
 }
 
 
-/* print path from source v using parent array */
+/* print path from source vertex using the parent array*/
 void print_path(struct Graph* graph,const int *parent, int v)
 {
-    /* TODO: for large array  stack is better choice */
     if (parent[v] == -1) {
         printf("%d ", v);
         return ;
     }
     AlterWeight(graph,parent[v],v,FindWeight(graph,parent[v],v)+1);
     AlterWeight(graph,v,parent[v],FindWeight(graph,v,parent[v])+1);
-    // graph[parent[v]][v]=graph[parent[v]][v]+1;
-    // graph[v][parent[v]]=graph[v][parent[v]]+1;
     if(FindWeight(graph,v,parent[v])<0)
     {
         AlterWeight(graph,parent[v],v,0);
@@ -188,10 +220,8 @@ void print_spt(struct Graph* graph,const int *dist, int src,int dest, const int 
     puts("\nVertex    Distance");
     int i;
     for (i = 0; i < VERTEX; i++) {
-       printf(" %2d -> %2d      %2d         ", src, i, dist[i]);
-       putchar('\n');
+       printf(" %d -> %d      %d         \n", src, i, dist[i]);
     }
-    // printf(" %2d -> %2d      %2d         ", src,dest, dist[4]);
     printf("\nPath\n");
     print_path(graph,parent, dest);
 }
@@ -199,49 +229,24 @@ void print_spt(struct Graph* graph,const int *dist, int src,int dest, const int 
 
 void dijkstra_min(struct Graph* graph, int src,int dest)
 {
-    /* dist[] will hold the shortest distance sourced src */
     int dist[VERTEX];
-    /* Shortest Path Tree Set  true if a vertex in included in SPT
-     *  or shortest distance from src to i is finalized
-     * */
     int spt_set[VERTEX];
- 
-    /* parent array to store shortest path tree */
     int parent[VERTEX];
-    parent[src]  = -1;            /* assuming source have no parent */
+    parent[src]  = -1;         
     int i;
     for (i = 0; i < VERTEX; i++) {
         dist[i]    = INT_MAX;       /* unreachable */
         spt_set[i] = 0;         /* not in SPT set */
     }
- 
-    /* distance of source vertex to itself always 0 */
     dist[src] = 0;
- 
-    /* find shortest path for all vertices */
     for (i = 0; i < VERTEX-1; i++) {
-        /* pick minimum vertex of those vertices not processed
-         *  u is always equal to src in the first call of min_dist()
-         *  */
         int u = min_dist(dist, spt_set);
- 
-        /* mark the picked vertex as processed */
         spt_set[u] = 1;
  
-        /* if current unprocessed vertex is unreachable
-         *  for those disconnected vertex
-         * */
         if (dist[u] == INT_MAX) continue;
  
-        /* update dist[] of adjacent vertices of the picked vertex */
         int v;
         for (v = 0; v < VERTEX; v++)
-            /* update dist[v] only if
-             *  1) there is a edge from u to v
-             *  2) it's not in spt_set[]
-             *  3) distance of path from src to v through u
-             *    is smaller than current value of dist[v]
-             * */
             if (FindWeight(graph,u,v) && spt_set[v] == 0 &&
                     dist[u] + FindWeight(graph,u,v) < dist[v])
             {
@@ -249,8 +254,7 @@ void dijkstra_min(struct Graph* graph, int src,int dest)
                 parent[v] = u;
             }
     }
-    /* print the constructed distance array */
-    print_spt(graph,dist, src,dest, parent);
+        print_spt(graph,dist, src,dest, parent);
 }
  
 void display(int v;int graph[v][v],int v)
@@ -290,33 +294,13 @@ int distance_dijkstra(struct Graph* graph, int src,int dest)
         dist[i]    = INT_MAX;       /* unreachable */
         spt_set[i] = 0;         /* not in SPT set */
     }
-
     dist[src] = 0;
- 
-    /* find shortest path for all vertices */
-    for (i = 0; i < VERTEX-1; i++) {
-        /* pick minimum vertex of those vertices not processed
-         *  u is always equal to src in the first call of min_dist()
-         *  */
+     for (i = 0; i < VERTEX-1; i++) {
         int u = min_dist(dist, spt_set);
- 
-        /* mark the picked vertex as processed */
-        spt_set[u] = 1;
- 
-        /* if current unprocessed vertex is unreachable
-         *  for those disconnected vertex
-         * */
+         spt_set[u] = 1;
         if (dist[u] == INT_MAX) continue;
- 
-        /* update dist[] of adjacent vertices of the picked vertex */
-        int v;
+         int v;
         for (v = 0; v < VERTEX; v++)
-            /* update dist[v] only if
-             *  1) there is a edge from u to v
-             *  2) it's not in spt_set[]
-             *  3) distance of path from src to v through u
-             *    is smaller than current value of dist[v]
-             * */
             if (FindWeight(graph,u,v) && spt_set[v] == 0 &&
                     dist[u] + FindWeight(graph,u,v) < dist[v])
             {
@@ -334,21 +318,12 @@ void nearest_node(struct Graph* bus_graph,struct Graph* dist_graph,int source,in
         queue[i]=-1;
     }
     int neighbours=0;
-    // int neighbours=bfs(bus_graph,destination,queue);
     node* temp=dist_graph->adjLists[destination];
     while(temp)
     {
         queue[neighbours++]=temp->vertex;
         temp=temp->link;
     }
-    // for(i=0;i<VERTEX;i++)
-    // {
-    //     if(FindWeight(dist_graph,i,destination)>0)
-    //     {
-    //         queue[neighbours]=i;
-    //         neighbours++;
-    //     }
-    // }
     if(neighbours==0)
     {
     	printf("\nNo immediate neighbours, maybe take an alternate route?\n");
@@ -356,21 +331,18 @@ void nearest_node(struct Graph* bus_graph,struct Graph* dist_graph,int source,in
 	else
 	{
 		printf("\nImmediate neighbour nodes are present,bus plus walk can be done\n");
-	    // dijkstra_mini(bus_graph,profit_graph,queue,source,destination);
         int min=INT_MAX-1;int mini=VERTEX;
         for(i=0;i<VERTEX;i++)
         {
        	printf("queue %d\n",queue[i]);
-			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination))<min)//dist_graph[queue[i]][destination])<min)
+			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination))<min)
             {
 //            	printf("distance is %d for %d\n",distance_dijkstra(bus_graph,source,queue[i]),queue[i]);
 //        		printf("distance_graph value %d\n",profit_graph[queue[i]][destination]);
-                min=distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination);//profit_graph[queue[i]][destination];
+                min=distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination);
 				mini=queue[i];
-//                printf("\nminimum is %d\n",mini);
             }
         }
-//        printf("final min chosen is %d\n",mini);
         dijkstra_min(bus_graph,source,mini);
         printf("\nfrom %d move to %d by using other means for %d distance\n",mini,destination,FindWeight(dist_graph,mini,destination));//profit_graph[mini][destination]
 	}
@@ -469,7 +441,6 @@ int i,j;
     switch(choice)
     {
         case 1:
-//            int visited[vertex];
             printf("Suggesting path for travelers\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
