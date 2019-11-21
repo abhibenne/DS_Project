@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <limits.h>
 #include <stdlib.h>
- 
+#include <string.h>
 struct node
 {
     int vertex;
@@ -18,7 +18,7 @@ struct Graph
  
 struct review
 {
-    char r[1000];
+    char r[10000];
     int rating;
     struct review* link; 
 };
@@ -34,7 +34,7 @@ typedef struct Popularity popular;
 review* newReview(char *re,int rate)
 {
     review* new=(review*)malloc(sizeof(review));
-    new->r=re;
+    strcpy(new->r,re);
     new->rating=rate;
     new->link=NULL;
     return new;
@@ -46,6 +46,7 @@ popular* newPopularity(int ind)
     new->head=NULL;
     new->index=ind;
     new->number_of_reviews=0;
+    return new;
 }   
 
 
@@ -389,6 +390,55 @@ void dfs(struct Graph* graph,int visit[],int order[],int source)
     DFS(graph,visited,visit,order,source,0);
 }
 
+void insertReview(popular* p[],int loc,char* s,int rate)
+{
+    popular* temp=p[loc];
+    review* temp2=temp->head;
+    if(temp2==NULL)
+    {
+        temp->head=newReview(s,rate);
+    }
+    else
+    {
+        review* prev=NULL;
+        while(temp2 && temp2->rating>rate)
+        {
+            prev=temp2;
+            temp2=temp2->link;
+        }
+        if(prev==NULL)
+        {
+            temp->head=newReview(s,rate);
+            temp->head->link=temp2;
+        }
+        else
+        {
+            review* temp3=newReview(s,rate);
+            prev->link=temp3;
+            temp3->link=temp2;
+        }
+    }
+}
+
+void DisplayReviews(popular* p[],int loc)
+{
+    popular* temp=p[loc];
+    review* temp2=temp->head;
+    if(temp2==NULL)
+    {
+        printf("No reviews on this place yet!\n");
+        return;
+    }
+    printf("\nReviews from highest to lowest are:\n");int n=1;
+    while(temp2)
+    {
+        printf("\n%d)\n",n);n++;
+        printf("Rating: %d\n",temp2->rating);
+        printf("Review: %s",temp2->r);
+        temp2=temp2->link;
+    }
+}
+
 int main()
 {
 int i,j;
@@ -432,10 +482,15 @@ int i,j;
         printf("\nBus route graph\n");
         printGraph(graph2);
     }
-    int source,destination,num_travelers;int visited[vertex];
+    popular* po[vertex];
+    for(i=0;i<vertex;i++)
+    {
+        po[i]=newPopularity(i);
+    }
+    int source,destination,num_travelers;int visited[vertex];int choice3,loc,rate;char s[10000];
     printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
     printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
-    printf("5)Look for popular places or insert?\n6)To display the graphs\n");
+    printf("5)Look for popular places or leave a review?\n6)To display the graphs\n");
     scanf("%d",&choice);
     do{
     switch(choice)
@@ -540,6 +595,30 @@ int i,j;
                 {
                     break;
                 }
+            }
+            break;
+        case 5:
+            printf("\nLeave a review or see other people's review about a place. 1 for inserting,2 for viewing\n");
+            scanf("%d",&choice3);
+            if(choice3==1)
+            {   
+                printf("Enter the location which you want to review\n");
+                scanf("%d",&loc);
+                fflush(stdin);
+                printf("Enter the review\n");
+                scanf("%s", s); 
+                fflush(stdin);
+                printf("Enter the rating for the location\n");
+                scanf("%d",&rate);
+                insertReview(po,loc,s,rate);
+                printf("Do you want to see reviews? (2 for seeing)\n");
+                scanf("%d",&choice3);
+            }
+            if(choice3==2)
+            {
+                printf("Enter the location for which you want to see review\n");
+                scanf("%d",&loc);
+                DisplayReviews(po,loc);
             }
             break;
         case 6:
