@@ -481,7 +481,7 @@ void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX]
         int min=INT_MAX-1000;int mini=VERTEX;
         for(i=0;i<VERTEX;i++)
         {
-        	printf("queue %d\n",queue[i]);
+//        	printf("queue %d\n",queue[i]);
 			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+profit_graph[queue[i]][destination])<min)
             {
 //            	printf("distance is %d for %d\n",distance_dijkstra(bus_graph,source,queue[i]),queue[i]);
@@ -502,19 +502,19 @@ void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX]
     // }
 }
 
-void present_in(int visit[],int a)
-{
-    int i=0;
-    while(visit[i])
-    {
-        if(visit[i]==a)
-            return 1;
-        i++;
-    }
-    return 0;
-}
+// int present_in(int visit[],int a)
+// {
+//     int i=0;
+//     while(visit[i])
+//     {
+//         if(visit[i]==1)
+//             return i;
+//         i++;
+//     }
+//     return -1;
+// }
 
-void bfs(int graph[VERTEX][VERTEX],int visit[],int order[])
+void bfs(int graph[VERTEX][VERTEX],int visit[],int order[],int source)
 {
     int q[VERTEX];
     int count=0,j;
@@ -525,19 +525,21 @@ void bfs(int graph[VERTEX][VERTEX],int visit[],int order[])
     }
     int top=-1;int index=0;
     visited[source]=1;top++;
-    q[0]=source;
-   while(top!=-1)
+    q[0]=source;int front=0;
+    while(front!=(top+1))
    {
-        int a=q[top--];
+        printf("inside bfs: %d",q[top]);
+        printf("top value is %d\n",top);
+        int a=q[front++];
         int i;
-        if(present_in(visit,a))
-        {
-            order[index++]=a;
-        }
         for(i=0;i<VERTEX;i++)
         {
-            if(!visited[i])
+            if(!visited[i] && graph[a][i]!=0)
             {
+                if(visit[i]==1)
+                {
+                    order[index++]=i;
+                }
                 visited[i]=1;
                 q[++top]=i;
             }
@@ -545,17 +547,50 @@ void bfs(int graph[VERTEX][VERTEX],int visit[],int order[])
    }
 }
 
+// void bfs(int graph[VERTEX][VERTEX],int visit[],int order[],int source)
+// {
+//     int q[VERTEX];
+//     int count=0,j;
+//     int visited[VERTEX];
+//     for(j=0;j<VERTEX;j++)
+//     {
+//      visited[j]=0;
+//     }
+//     int top=-1;int index=0;
+//     visited[source]=1;top++;
+//     q[0]=source;
+//    while(top!=-1)
+//    {
+    // printf("inside bfs: %d",q[top]);
+    // printf("top value is %d\n",top);
+//         int a=q[top--];
+//         int i;
+//         if(visit[a]==1)
+//         {
+//         	order[index++]=a;
+// //            order[index++]=present_in(visit,a);
+//         }
+//         for(i=0;i<VERTEX;i++)
+//         {
+//             if(!visited[i])
+//             {
+//                 visited[i]=1;
+//                 q[++top]=i;
+//             }
+//         }
+//    }
+// }
+
 int main()
 {
 int i,j;
     printf("Let us first create the graph, enter the number of vertices\n");
     int vertex,weight,prof,p; scanf("%d",&vertex);
     int visit_loc[vertex],ordered_loc[vertex];
-    int graph1[vertex][vertex];int graph2[vertex][vertex];
+    int graph1[vertex][vertex];
     int graph3[vertex][vertex];
     VERTEX=vertex;
     initialize(graph1,vertex);
-    initialize(graph2,vertex);
     initialize(graph3,vertex);
     while(1)
     {
@@ -565,8 +600,6 @@ int i,j;
             break;
         printf("Enter distance");
         scanf("%d",&weight);
-        printf("Enter profit or eagerness\n");
-        scanf("%d",&prof);
         graph1[i][j]=weight;
         graph1[j][i]=weight;
     }
@@ -590,8 +623,6 @@ int i,j;
     }
     printf("Distance graph\n");
     display(graph1,vertex);
-    printf("\nCost graph\n");
-    display(graph2,vertex);
     if(choice1==1)
     {
         printf("\nBus route graph\n");
@@ -609,22 +640,33 @@ int i,j;
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
             printf("Enter the number of travelers going from %d to %d\n",source,destination);
-            scanf("%d",&num_travelers);int i;
+            scanf("%d",&num_travelers);
+            int i;
             printf("Enter 1 for the vertices you want to visit between the source and destiantion and 0 for nodes which are not needed\n");
             for(i=0;i<vertex;i++)
             {
                 printf("\n%d =>");
                 scanf("%d",&visit_loc[i]);
             }
-            bfs(graph1,visit_loc,ordered_loc);
+            for(i=0;i<vertex;i++)
+            {
+				ordered_loc[i]=-1;
+            }
+            bfs(graph1,visit_loc,ordered_loc,source);
+            dijkstra_min(graph1,source,ordered_loc[0]);
+            for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
+            {
+                dijkstra_min(graph1,ordered_loc[i],ordered_loc[i+1]);
+            }
+            dijkstra_min(graph1,ordered_loc[i],destination);
             break;
         case 2:
-            printf("emergency route only based on distance and traffic");
+            printf("shortest route only based on distance and traffic");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
             printf("Enter the number of travelers going from %d to %d\n",source,destination);
-            scanf("%d",&num_travelers);int i;
+            scanf("%d",&num_travelers);
             for(i=0;i<num_travelers;i++)
             {
                 dijkstra_min(graph1, source,destination);
@@ -684,13 +726,15 @@ int i,j;
                     graph3[i][j]=weight;
                     graph3[j][i]=weight;
                 }
+                else
+                {
+                    break;
+                }
             }
             break;
         case 5:
             printf("\nDistance graph");
             display(graph1,vertex);
-            printf("\nCost graph");
-            display(graph2,vertex);
             if(choice1==1)
             {
                 printf("\nBus route graph\n");
@@ -725,4 +769,53 @@ int i,j;
 -1 -1
 4
 1 5
+*/
+
+/*
+5
+1 2 10
+2 3 20
+3 4 40
+4 0 50
+1 0 90
+-1 -1
+0
+1
+1 0
+1
+0
+0
+1
+1
+1
+*/
+/*
+10
+1 2 10
+2 3 20
+3 4 40
+2 5 50
+5 4 40
+4 0 20
+1 6 60
+6 7 70
+7 9 80
+6 8 50
+8 9 10
+9 0 10
+-1 -1
+0
+1
+1 0
+1
+0
+0
+1
+1
+1
+1
+0
+0
+0
+0
 */
