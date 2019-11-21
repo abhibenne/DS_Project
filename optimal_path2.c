@@ -405,37 +405,6 @@ void dijkstra_mini(int graph[VERTEX][VERTEX],int graph2[VERTEX][VERTEX],int queu
     // print_spti(graph,dist, src,dest, parent);
 }
 
-// int bfs(int graph[VERTEX][VERTEX],int source,int queue[])
-// {
-//     int q[VERTEX];
-//     int count=0,j;
-//     int visited[VERTEX];
-//     for(j=0;j<VERTEX;j++)
-//     {
-//     	visited[j]=0;
-// 	}
-//     int top=-1;
-//     visited[source]=1;top++;
-//     q[0]=source;
-// //    while(top!=-1)
-// //    {
-//         int a=q[top--];
-//         if(count!=0)
-//             queue[count-1]=a;
-//         count++;
-//         int i;
-//         for(i=0;i<VERTEX;i++)
-//         {
-//             if(!visited[i])
-//             {
-//             	count++;
-//                 visited[i]=1;
-//                 q[++top]=i;
-//             }
-//         }
-// //    }
-// 	return count;
-// }
 
 int distance_dijkstra(int graph[VERTEX][VERTEX], int src,int dest)
 {
@@ -533,11 +502,55 @@ void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX]
     // }
 }
 
+void present_in(int visit[],int a)
+{
+    int i=0;
+    while(visit[i])
+    {
+        if(visit[i]==a)
+            return 1;
+        i++;
+    }
+    return 0;
+}
+
+void bfs(int graph[VERTEX][VERTEX],int visit[],int order[])
+{
+    int q[VERTEX];
+    int count=0,j;
+    int visited[VERTEX];
+    for(j=0;j<VERTEX;j++)
+    {
+     visited[j]=0;
+    }
+    int top=-1;int index=0;
+    visited[source]=1;top++;
+    q[0]=source;
+   while(top!=-1)
+   {
+        int a=q[top--];
+        int i;
+        if(present_in(visit,a))
+        {
+            order[index++]=a;
+        }
+        for(i=0;i<VERTEX;i++)
+        {
+            if(!visited[i])
+            {
+                visited[i]=1;
+                q[++top]=i;
+            }
+        }
+   }
+}
+
 int main()
 {
 int i,j;
     printf("Let us first create the graph, enter the number of vertices\n");
     int vertex,weight,prof,p; scanf("%d",&vertex);
+    int visit_loc[vertex],ordered_loc[vertex];
     int graph1[vertex][vertex];int graph2[vertex][vertex];
     int graph3[vertex][vertex];
     VERTEX=vertex;
@@ -556,9 +569,6 @@ int i,j;
         scanf("%d",&prof);
         graph1[i][j]=weight;
         graph1[j][i]=weight;
-        int p= (prof+100)-weight;
-        graph2[i][j]=p;
-        graph2[j][i]=p;
     }
     int choice1,choice;
     printf("Do you want to add a bus/train route (1-yes or 0-no)\n");
@@ -599,12 +609,14 @@ int i,j;
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
             printf("Enter the number of travelers going from %d to %d\n",source,destination);
-            scanf("%d",&num_travelers);
-            for(i=0;i<num_travelers;i++)
+            scanf("%d",&num_travelers);int i;
+            printf("Enter 1 for the vertices you want to visit between the source and destiantion and 0 for nodes which are not needed\n");
+            for(i=0;i<vertex;i++)
             {
-                dijkstra_max(graph2, source,destination);
-                printf("\n");  
+                printf("\n%d =>");
+                scanf("%d",&visit_loc[i]);
             }
+            bfs(graph1,visit_loc,ordered_loc);
             break;
         case 2:
             printf("emergency route only based on distance and traffic");
