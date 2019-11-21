@@ -147,30 +147,43 @@ void dijkstra_min_once(int graph[VERTEX][VERTEX], int src,int dest,int visited[]
     print_spt_once(graph,dist, src,dest, parent,visited);
 }
 
-
+void AlterWeight(struct Graph* graph,int source,int destination,int new)
+{
+    node* temp=graph->adjLists[source];
+    while(temp)
+    {
+        if(temp->vertex==destination)
+        {
+            temp->weight=new;
+        }
+        temp=temp->link;
+    }
+}
 
 
 /* print path from source v using parent array */
-void print_path(int graph[VERTEX][VERTEX],const int *parent, int v)
+void print_path(struct Graph* graph,const int *parent, int v)
 {
     /* TODO: for large array  stack is better choice */
     if (parent[v] == -1) {
         printf("%d ", v);
         return ;
     }
-    // trying to alter it
-    graph[parent[v]][v]=graph[parent[v]][v]+1;
-    graph[v][parent[v]]=graph[v][parent[v]]+1;
-    if(graph[v][parent[v]]<0)
+    AlterWeight(graph,parent[v],v,FindWeight(graph,parent[v],v)+1);
+    AlterWeight(graph,v,parent[v],FindWeight(graph,v,parent[v])+1);
+    // graph[parent[v]][v]=graph[parent[v]][v]+1;
+    // graph[v][parent[v]]=graph[v][parent[v]]+1;
+    if(FindWeight(graph,v,parent[v])<0)
     {
-        graph[v][parent[v]]=0;
-        graph[parent[v]][v]=0;
+        AlterWeight(graph,parent[v],v,0);
+        AlterWeight(graph,v,parent[v],0);
     }
+
     print_path(graph,parent, parent[v]);
     printf("%d ", v);
 }
  
-void print_spt(int graph[VERTEX][VERTEX],const int *dist, int src,int dest, const int *parent)
+void print_spt(struct Graph* graph,const int *dist, int src,int dest, const int *parent)
 {
     puts("\nVertex    Distance");
     int i;
@@ -184,7 +197,7 @@ void print_spt(int graph[VERTEX][VERTEX],const int *dist, int src,int dest, cons
 }
  
 
-void dijkstra_min(int graph[VERTEX][VERTEX], int src,int dest)
+void dijkstra_min(struct Graph* graph, int src,int dest)
 {
     /* dist[] will hold the shortest distance sourced src */
     int dist[VERTEX];
@@ -229,10 +242,10 @@ void dijkstra_min(int graph[VERTEX][VERTEX], int src,int dest)
              *  3) distance of path from src to v through u
              *    is smaller than current value of dist[v]
              * */
-            if (graph[u][v] && spt_set[v] == 0 &&
-                    dist[u] + graph[u][v] < dist[v])
+            if (FindWeight(graph,u,v) && spt_set[v] == 0 &&
+                    dist[u] + FindWeight(graph,u,v) < dist[v])
             {
-                dist[v]   = dist[u] + graph[u][v];
+                dist[v]   = dist[u] + FindWeight(graph,u,v);
                 parent[v] = u;
             }
     }
@@ -268,7 +281,7 @@ void initialize(int v;int graph[v][v],int v)
     }
 }
 
-int distance_dijkstra(int graph[VERTEX][VERTEX], int src,int dest)
+int distance_dijkstra(struct Graph* graph, int src,int dest)
 {
     int dist[VERTEX];
     int spt_set[VERTEX];         
@@ -304,32 +317,38 @@ int distance_dijkstra(int graph[VERTEX][VERTEX], int src,int dest)
              *  3) distance of path from src to v through u
              *    is smaller than current value of dist[v]
              * */
-            if (graph[u][v] && spt_set[v] == 0 &&
-                    dist[u] + graph[u][v] < dist[v])
+            if (FindWeight(graph,u,v) && spt_set[v] == 0 &&
+                    dist[u] + FindWeight(graph,u,v) < dist[v])
             {
-                dist[v]   = dist[u] + graph[u][v];
+                dist[v]   = dist[u] + FindWeight(graph,u,v);
             }
     }
     return dist[dest];
 }
 
-void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX],int source,int destination)
+void nearest_node(struct Graph* bus_graph,struct Graph* dist_graph,int source,int destination)
 {
     int queue[VERTEX],i;
     for(i=0;i<VERTEX;i++)
     {
         queue[i]=-1;
     }
-    // int neighbours=bfs(bus_graph,destination,queue);
     int neighbours=0;
-    for(i=0;i<VERTEX;i++)
+    // int neighbours=bfs(bus_graph,destination,queue);
+    node* temp=dist_graph->adjLists[destination];
+    while(temp)
     {
-        if(profit_graph[i][destination]>0)
-        {
-            queue[neighbours]=i;
-            neighbours++;
-        }
+        queue[neighbours++]=temp->vertex;
+        temp=temp->link;
     }
+    // for(i=0;i<VERTEX;i++)
+    // {
+    //     if(FindWeight(dist_graph,i,destination)>0)
+    //     {
+    //         queue[neighbours]=i;
+    //         neighbours++;
+    //     }
+    // }
     if(neighbours==0)
     {
     	printf("\nNo immediate neighbours, maybe take an alternate route?\n");
@@ -337,24 +356,23 @@ void nearest_node(int bus_graph[VERTEX][VERTEX],int profit_graph[VERTEX][VERTEX]
 	else
 	{
 		printf("\nImmediate neighbour nodes are present,bus plus walk can be done\n");
-		printf("%d %d %d\n",queue[0],queue[1],queue[2]);
 	    // dijkstra_mini(bus_graph,profit_graph,queue,source,destination);
         int min=INT_MAX-1;int mini=VERTEX;
         for(i=0;i<VERTEX;i++)
         {
-//        	printf("queue %d\n",queue[i]);
-			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+profit_graph[queue[i]][destination])<min)
+       	printf("queue %d\n",queue[i]);
+			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination))<min)//dist_graph[queue[i]][destination])<min)
             {
 //            	printf("distance is %d for %d\n",distance_dijkstra(bus_graph,source,queue[i]),queue[i]);
 //        		printf("distance_graph value %d\n",profit_graph[queue[i]][destination]);
-                min=distance_dijkstra(bus_graph,source,queue[i])+profit_graph[queue[i]][destination];
+                min=distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination);//profit_graph[queue[i]][destination];
 				mini=queue[i];
 //                printf("\nminimum is %d\n",mini);
             }
         }
 //        printf("final min chosen is %d\n",mini);
         dijkstra_min(bus_graph,source,mini);
-        printf("\nfrom %d move to %d by using other means for %d distance\n",mini,destination,profit_graph[mini][destination]);
+        printf("\nfrom %d move to %d by using other means for %d distance\n",mini,destination,FindWeight(dist_graph,mini,destination));//profit_graph[mini][destination]
 	}
 }
 
@@ -432,7 +450,7 @@ int i,j;
             	break;
         	printf("Enter distance\n");
         	scanf("%d",&dist);
-            addEdge(graph2, i, j,weight);
+            addEdge(graph2, i, j,dist);
 		}
     }
     printf("Distance graph\n");
@@ -469,15 +487,15 @@ int i,j;
             }
             dfs(graph1,visit_loc,ordered_loc,source);int ref;
             printf("%d",FindWeight(graph1,1,2));
-            // dijkstra_min_once(graph1,source,ordered_loc[0],visited);
-            // for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
-            // {
-            //     if(visited[ordered_loc[i+1]]==0)
-            //     dijkstra_min_once(graph1,ordered_loc[i],ordered_loc[i+1],visited);
-            // }
-            // dijkstra_min(graph1,ordered_loc[i],destination);
+            dijkstra_min(graph1,source,ordered_loc[0]);
+            for(i=0;i<(vertex-1) && ordered_loc[i+1]!=-1;i++)
+            {
+                if(visited[ordered_loc[i+1]]==0)
+                dijkstra_min(graph1,ordered_loc[i],ordered_loc[i+1]);
+            }
+            dijkstra_min(graph1,ordered_loc[i],destination);
             break;
-       /* case 2:
+        case 2:
             printf("Shortest route only based on distance and traffic\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
@@ -490,6 +508,7 @@ int i,j;
                 printf("\n");  
             }
             break;
+
         case 3:
             printf("Connection changes\n");
             int source,destination,new_weight;
@@ -497,11 +516,12 @@ int i,j;
             scanf("%d %d",&source,&destination);
             printf("Enter altered weight\n");
             scanf("%d",&new_weight);
-//            graph1[source][destination]=new_weight;
-//            graph1[destination][source]=new_weight;
+            AlterWeight(graph1,source,destination,new_weight);
+            AlterWeight(graph1,destination,source,new_weight);
             printf("modified graph\n");
-            display(graph1,VERTEX);
+            printGraph(graph1);
             break;
+           
         case 4:
             if(choice1==1)
             {
@@ -513,10 +533,10 @@ int i,j;
                int num=num_travelers/30;
                 for(i=0;i<VERTEX;i++)
                 {
-                    if(graph3[i][destination])
+                    if(FindWeight(graph2,i,destination))
                     {
                         printf("direct bus\n");
-                        dijkstra_min(graph3,source,destination);
+                        dijkstra_min(graph2,source,destination);
                         printf("\n"); 
                         flag=1;
                         break;
@@ -525,7 +545,7 @@ int i,j;
                 if(flag==0)
                 {
                 	printf("no direct bus\n");
-                    nearest_node(graph3,graph1,source,destination);
+                    nearest_node(graph2,graph1,source,destination);
                 }
             }
             else
@@ -542,8 +562,7 @@ int i,j;
                             break;
                         printf("Enter distance\n");
                         scanf("%d",&weight);
-                        graph3[i][j]=weight;
-                        graph3[j][i]=weight;
+                        addEdge(graph2, i, j,weight);
                     }
                 }
                 else
@@ -554,13 +573,13 @@ int i,j;
             break;
         case 6:
             printf("\nDistance graph\n");
-            display(graph1,vertex);
+            printGraph(graph1);
             if(choice1==1)
             {
                 printf("\nBus route graph\n");
-                display(graph3,vertex);
+                printGraph(graph2);
             }
-            break;*/
+            break;
         default:
             printf("wrong option\n");
             break;
