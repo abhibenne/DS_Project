@@ -128,6 +128,7 @@ popular* newPopularity(int ind)
 void insertReview(popular* p[],int loc,char* s,int rate)
 {
     popular* temp=p[loc];
+    p[loc]->number_of_reviews+=1;
     review* temp2=temp->head;
     if(temp2==NULL)
     {
@@ -159,6 +160,7 @@ void DisplayReviews(popular* p[],int loc)
 {
     popular* temp=p[loc];
     review* temp2=temp->head;
+    printf("Number of reviews on this place: %d\n",p[loc]->number_of_reviews);
     if(temp2==NULL)
     {
         printf("No reviews on this place yet!\n");

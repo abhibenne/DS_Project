@@ -1,9 +1,8 @@
-//#include "header.h"
 #include "server.c"
 int main()
 {
 int i,j;
-    printf("Let us first create the graph, enter the number of vertices\n");
+    printf("Let us first Create the graph, Enter the number of vertices=>");
     int vertex,weight,prof,p; scanf("%d",&vertex);
     int visit_loc[vertex],ordered_loc[vertex];
     VERTEX=vertex;
@@ -11,32 +10,32 @@ int i,j;
     struct Graph* graph2 = createGraph(vertex);
     while(1)
     {
-        printf("Enter vertexes for edges and -1 and -1 for exit\n");
+        printf("Enter Vertices for Edges and -1 and -1 for Exit\n");
         scanf("%d %d",&i,&j);
         if(i==-1 && j==-1)
             break;
-        printf("Enter distance");
+        printf("Enter Distance=>");
         scanf("%d",&weight);
         addEdge(graph1, i, j,weight);
     }
     int choice1,choice;
-    printf("Do you want to add a bus/train route (1-yes or 0-no)\n");
+    printf("\n\nDo you want to add a bus/train route (1-yes or 0-no)\n");
     scanf("%d",&choice1);
     if(choice1==1)
     {
     	while(1)
     	{
     		int dist;
-    		printf("Enter vertexes for edges and -1 and -1 for exit\n");
+    		printf("Enter Vertices for Edges and -1 and -1 for Exit\n");
         	scanf("%d %d",&i,&j);
         	if(i==-1 && j==-1)
             	break;
-        	printf("Enter distance\n");
+        	printf("Enter Distance=>");
         	scanf("%d",&dist);
             addEdge(graph2, i, j,dist);
 		}
     }
-    printf("Distance graph\n");
+    printf("\n\nDistance graph\n");
     printGraphwithWeights(graph1);
     if(choice1==1)
     {
@@ -49,9 +48,9 @@ int i,j;
         po[i]=newPopularity(i);
     }
     int source,destination,num_travelers;int visited[vertex];int choice3,loc;char s[10000];int rate;
-    printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
+    printf("\nFeatures of Map Simulator:-\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
     printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
-    printf("5)Look for popular places or leave a review?\n6)To display the graphs\n");
+    printf("5)Look for popular places or leave a review?\n6)To display the graphs\nEnter Your Choice:");
     scanf("%d",&choice);
     do{
     switch(choice)
