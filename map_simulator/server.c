@@ -358,3 +358,37 @@ void nearest_node(struct Graph* bus_graph,struct Graph* dist_graph,int source,in
 
 
 // end of path finding for public transport
+
+// storing data in file
+void display(struct Graph* graph,int type)
+{
+    int m,n;
+	// printf("\t");
+    FILE *fp;
+    if(type==1)
+    {
+    	fp = fopen("distance.txt","w");
+		fprintf(fp,"Distance Graph\n\n");
+	}
+	else if(type==2)
+	{
+    	fp = fopen("bus.txt","w"); 
+		fprintf(fp,"Bus Graph\n\n");
+	}
+    int i;
+    for(i=0;i<VERTEX;i++)
+    {
+        int j;
+        node* temp=graph->adjLists[i];
+        while(temp)
+        {
+        	fprintf(fp,"Vertex:%d\t",temp->vertex);
+        	fprintf(fp,"Weight:%d\t",temp->weight);
+        	temp=temp->link;
+            // printf("%d\t",graph[i][j]);
+        }
+		// printf("\n\t");
+		fprintf(fp,"\n");
+    }
+    fclose(fp);
+}

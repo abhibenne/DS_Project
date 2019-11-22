@@ -48,7 +48,7 @@ int i,j;
         po[i]=newPopularity(i);
     }
     int source,destination,num_travelers;int visited[vertex];int choice3,loc;char s[10000];int rate;
-    printf("\n=======================================================================");s
+    printf("\n=======================================================================");
     printf("\n\nFeatures of Map Simulator:-1)Shortest route from one place to another based on distance and traffic\n");
     printf("2)To report connection changes from place A to B\n3)To display shortest route to place via public trasnport\n");
     printf("4)Look for popular places or leave a review..\n5) Traveler or travelers which have to visit places\n6)To display the graphs\nEnter Your Choice:");
@@ -199,6 +199,8 @@ int i,j;
     printf("4)Look for popular places or leave a review..\n5) Traveler or travelers which have to visit places\n6)To display the graphs\nOthers to quit\n\nEnter Your Choice:");
     scanf("%d",&choice);
     }while(choice<7 && choice>=1);
+    display(graph1,1);
+    display(graph2,2);
     return 0;
 }
 

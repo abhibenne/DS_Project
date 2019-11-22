@@ -51,3 +51,4 @@ void DFS(struct Graph* graph,int visited[],int visit[],int order[],int source,in
 void dfs(struct Graph* graph,int visit[],int order[],int source);
 void insertReview(popular* p[],int loc,char* s,int rate);
 void DisplayReviews(popular* p[],int loc);
+void display(struct Graph* graph,int type);
