@@ -340,7 +340,7 @@ void nearest_node(struct Graph* bus_graph,struct Graph* dist_graph,int source,in
         int min=INT_MAX-1;int mini=VERTEX;
         for(i=0;i<VERTEX;i++)
         {
-       	printf("queue %d\n",queue[i]);
+       	// printf("queue %d\n",queue[i]);
 			if(queue[i]!=-1 && (distance_dijkstra(bus_graph,source,queue[i]))!=INT_MAX && (distance_dijkstra(bus_graph,source,queue[i])+FindWeight(dist_graph,queue[i],destination))<min)
             {
 //            	printf("distance is %d for %d\n",distance_dijkstra(bus_graph,source,queue[i]),queue[i]);

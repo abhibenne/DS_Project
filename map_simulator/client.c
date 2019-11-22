@@ -37,11 +37,11 @@ int i,j;
 		}
     }
     printf("Distance graph\n");
-    printGraph(graph1);
+    printGraphwithWeights(graph1);
     if(choice1==1)
     {
         printf("\nPublic Trasnport graph\n");
-        printGraph(graph2);
+         printGraphwithWeights(graph2);
     }
     popular* po[vertex];
     for(i=0;i<vertex;i++)
@@ -115,9 +115,9 @@ int i,j;
             	printf("Bus route:\n");int i;int flag=0;
                 printf("Enter source and destination vertex\n");
                 scanf("%d %d",&source,&destination);
-               printf("Enter the number of travelers going from %d to %d\n",source,destination);
-               scanf("%d",&num_travelers);
-               int num=num_travelers/30;
+//               printf("Enter the number of travelers going from %d to %d\n",source,destination);
+//               scanf("%d",&num_travelers);
+//               int num=num_travelers/30;
                 for(i=0;i<VERTEX;i++)
                 {
                     if(FindWeight(graph2,i,destination))
@@ -196,7 +196,7 @@ int i,j;
     }
     printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
     printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
-    printf("5)Look for popular places or insert?\n6)To display the graphs\n");
+    printf("5)Look for popular places or review a place\n6)To display the graphs\n");
     printf("Other choices to quit\n");
     scanf("%d",&choice);
     }while(choice<7 && choice>=1);
