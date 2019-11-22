@@ -48,15 +48,16 @@ int i,j;
         po[i]=newPopularity(i);
     }
     int source,destination,num_travelers;int visited[vertex];int choice3,loc;char s[10000];int rate;
-    printf("\nFeatures of Map Simulator:-\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
-    printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
-    printf("5)Look for popular places or leave a review?\n6)To display the graphs\nEnter Your Choice:");
+    printf("\n=======================================================================");s
+    printf("\n\nFeatures of Map Simulator:-1)Shortest route from one place to another based on distance and traffic\n");
+    printf("2)To report connection changes from place A to B\n3)To display shortest route to place via public trasnport\n");
+    printf("4)Look for popular places or leave a review..\n5) Traveler or travelers which have to visit places\n6)To display the graphs\nEnter Your Choice:");
     scanf("%d",&choice);
     do{
     switch(choice)
     {
-        case 1:
-            printf("Suggesting path for travelers that covers all the path they need to visit\n");
+        case 5:
+            printf("\nSuggesting path for travelers that covers all the path they need to visit\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
@@ -81,8 +82,8 @@ int i,j;
             }
             dijkstra_min(graph1,ordered_loc[i],destination);
             break;
-        case 2:
-            printf("Shortest route only based on distance and traffic\n");
+        case 1:
+            printf("\nShortest route only based on distance and traffic\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
@@ -95,8 +96,8 @@ int i,j;
             }
             break;
 
-        case 3:
-            printf("Connection changes\n");
+        case 2:
+            printf("\nConnection changes\n");
             int source,destination,new_weight;
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
@@ -108,10 +109,10 @@ int i,j;
             printGraph(graph1);
             break;
            
-        case 4:
+        case 3:
             if(choice1==1)
             {
-            	printf("Bus route:\n");int i;int flag=0;
+            	printf("\nBus route:\n");int i;int flag=0;
                 printf("Enter source and destination vertex\n");
                 scanf("%d %d",&source,&destination);
 //               printf("Enter the number of travelers going from %d to %d\n",source,destination);
@@ -121,7 +122,7 @@ int i,j;
                 {
                     if(FindWeight(graph2,i,destination))
                     {
-                        printf("direct bus\n");
+                        printf("Direct bus from %d to %d\n",source,destination);
                         dijkstra_min(graph2,source,destination);
                         printf("\n"); 
                         flag=1;
@@ -130,7 +131,7 @@ int i,j;
                 }
                 if(flag==0)
                 {
-                	printf("no direct bus\n");
+                	printf("No direct bus from %d to %d\n",source,destination);
                     nearest_node(graph2,graph1,source,destination);
                 }
             }
@@ -142,7 +143,7 @@ int i,j;
                 {
                     while(1)
                     {
-                        printf("Enter vertexes for edges and -1 and -1 for exit\n");
+                        printf("Enter Vertices for Edges and -1 and -1 for Exit\n");
                         scanf("%d %d",&i,&j);
                         if(i==-1 && j==-1)
                             break;
@@ -157,25 +158,25 @@ int i,j;
                 }
             }
             break;
-        case 5:
-            printf("\nLeave a review or see other people's review about a place. 1 for inserting,2 for viewing\n");
+        case 4:
+            printf("\nLeave a review or see other people's review about a place.. '1' for inserting..'2' for viewing\n");
             scanf("%d",&choice3);
             if(choice3==1)
             {   
-                printf("Enter the location which you want to review\n");
+                printf("\nEnter the location which you want to review=>");
                 scanf("%d",&loc);
                 fflush(stdin);
-                printf("Enter the review\n");
+                printf("Enter the review=>\n");
                 scanf("%[^\n]c", s); 
                 fflush(stdin);
-                printf("Enter the rating for the location\n");
+                printf("Enter the rating for the location=>");
                 scanf("%d",&rate);
                 fflush(stdin);
                 insertReview(po,loc,s,rate);
             }
             if(choice3==2)
             {
-                printf("Enter the location for which you want to see review\n");
+                printf("\nEnter the location for which you want to see review=>");
                 scanf("%d",&loc);
                 DisplayReviews(po,loc);
             }
@@ -190,13 +191,12 @@ int i,j;
             }
             break;
         default:
-            printf("wrong option\n");
+            printf("Wrong option\n");
             break;
     }
-    printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
-    printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
-    printf("5)Look for popular places or review a place\n6)To display the graphs\n");
-    printf("Other choices to quit\n");
+    printf("\nFeatures of Map Simulator:-1)Shortest route from one place to another based on distance and traffic\n");
+    printf("2)To report connection changes from place A to B\n3)To display shortest route to place via public trasnport\n");
+    printf("4)Look for popular places or leave a review..\n5) Traveler or travelers which have to visit places\n6)To display the graphs\nOthers to quit\n\nEnter Your Choice:");
     scanf("%d",&choice);
     }while(choice<7 && choice>=1);
     return 0;
