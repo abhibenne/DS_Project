@@ -177,7 +177,7 @@ void DisplayReviews(popular* p[],int loc)
 // end of review section
 
 
-// dfs for my path 
+// dfs for traveler's path 
 
 
 void DFS(struct Graph* graph,int visited[],int visit[],int order[],int source,int index)
@@ -263,8 +263,8 @@ void dijkstra_min(struct Graph* graph, int src,int dest)
     parent[src]  = -1;         
     int i;
     for (i = 0; i < VERTEX; i++) {
-        dist[i]    = INT_MAX;       /* unreachable */
-        spt_set[i] = 0;         /* not in SPT set */
+        dist[i]    = INT_MAX;     
+        spt_set[i] = 0;        
     }
     dist[src] = 0;
     for (i = 0; i < VERTEX-1; i++) {

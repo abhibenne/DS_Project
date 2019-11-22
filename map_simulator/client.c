@@ -48,7 +48,7 @@ int i,j;
     {
         po[i]=newPopularity(i);
     }
-    int source,destination,num_travelers;int visited[vertex];int choice3,loc,rate;char s[10000];
+    int source,destination,num_travelers;int visited[vertex];int choice3,loc;char s[10000];int rate;
     printf("\nEnter your choice:\n1) Traveler or travelers which have to visit places\n2) Shortest route from one place to another based on distance and traffic\n");
     printf("3)To report connection changes from place A to B\n4)To display shortest route to place via public trasnport\n");
     printf("5)Look for popular places or leave a review?\n6)To display the graphs\n");
@@ -57,7 +57,7 @@ int i,j;
     switch(choice)
     {
         case 1:
-            printf("Suggesting path for travelers\n");
+            printf("Suggesting path for travelers that covers all the path they need to visit\n");
             printf("Traveler based on locations\n");
             printf("Enter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
@@ -171,9 +171,8 @@ int i,j;
                 fflush(stdin);
                 printf("Enter the rating for the location\n");
                 scanf("%d",&rate);
+                fflush(stdin);
                 insertReview(po,loc,s,rate);
-                printf("Do you want to see reviews? (2 for seeing)\n");
-                scanf("%d",&choice3);
             }
             if(choice3==2)
             {
@@ -205,7 +204,7 @@ int i,j;
 }
 
 
-// Graph examples for testing
+// Graph examples to test
 /*
 6
 1 2 10 12
