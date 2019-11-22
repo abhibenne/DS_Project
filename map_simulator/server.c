@@ -380,6 +380,7 @@ void display(struct Graph* graph,int type)
     {
         int j;
         node* temp=graph->adjLists[i];
+        fprintf(fp,"Source:%d\n",i);
         while(temp)
         {
         	fprintf(fp,"Vertex:%d\t",temp->vertex);

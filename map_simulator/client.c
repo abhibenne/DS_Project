@@ -2,7 +2,7 @@
 int main()
 {
 int i,j;
-    printf("Let us first Create the graph, Enter the number of vertices=>");
+    printf("Let us first Create the graph, \nEnter the number of vertices=>");
     int vertex,weight,prof,p; scanf("%d",&vertex);
     int visit_loc[vertex],ordered_loc[vertex];
     VERTEX=vertex;
@@ -26,7 +26,7 @@ int i,j;
     	while(1)
     	{
     		int dist;
-    		printf("Enter Vertices for Edges and -1 and -1 for Exit\n");
+    		printf("\nEnter Vertices for Edges and -1 and -1 for Exit\n");
         	scanf("%d %d",&i,&j);
         	if(i==-1 && j==-1)
             	break;
@@ -49,7 +49,7 @@ int i,j;
     }
     int source,destination,num_travelers;int visited[vertex];int choice3,loc;char s[10000];int rate;
     printf("\n=======================================================================");
-    printf("\n\nFeatures of Map Simulator:-1)Shortest route from one place to another based on distance and traffic\n");
+    printf("\n\nFeatures of Map Simulator:-\n1)Shortest route from one place to another based on distance and traffic\n");
     printf("2)To report connection changes from place A to B\n3)To display shortest route to place via public trasnport\n");
     printf("4)Look for popular places or leave a review..\n5) Traveler or travelers which have to visit places\n6)To display the graphs\nEnter Your Choice:");
     scanf("%d",&choice);
@@ -59,12 +59,12 @@ int i,j;
         case 5:
             printf("\nSuggesting path for travelers that covers all the path they need to visit\n");
             printf("Traveler based on locations\n");
-            printf("Enter source and destination vertex\n");
+            printf("\nEnter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
             printf("Enter the number of travelers going from %d to %d\n",source,destination);
             scanf("%d",&num_travelers);
             int i;
-            printf("Enter 1 for the vertices you want to visit between the source and destiantion and 0 for nodes which are not needed\n");
+            printf("\nEnter 1 for the vertices you want to visit between the source and destiantion and 0 for nodes which are not needed\n");
             for(i=0;i<vertex;i++)
             {
                 ordered_loc[i]=-1;
@@ -85,7 +85,7 @@ int i,j;
         case 1:
             printf("\nShortest route only based on distance and traffic\n");
             printf("Traveler based on locations\n");
-            printf("Enter source and destination vertex\n");
+            printf("\nEnter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
             printf("Enter the number of travelers going from %d to %d\n",source,destination);
             scanf("%d",&num_travelers);
@@ -99,13 +99,13 @@ int i,j;
         case 2:
             printf("\nConnection changes\n");
             int source,destination,new_weight;
-            printf("Enter source and destination vertex\n");
+            printf("\nEnter source and destination vertex\n");
             scanf("%d %d",&source,&destination);
-            printf("Enter altered weight\n");
+            printf("\nEnter altered weight\n");
             scanf("%d",&new_weight);
             AlterWeight(graph1,source,destination,new_weight);
             AlterWeight(graph1,destination,source,new_weight);
-            printf("modified graph\n");
+            printf("\nModified graph\n");
             printGraph(graph1);
             break;
            
@@ -137,17 +137,17 @@ int i,j;
             }
             else
             {
-                printf("Public transport route not inserted.Insert it now? (1 for yes, 0 for no)\n");
+                printf("\nPublic transport route is not inserted.Insert it now? (1 for yes, 0 for no)\n");
                 scanf("%d",&choice1);
                 if(choice1==1)
                 {
                     while(1)
                     {
-                        printf("Enter Vertices for Edges and -1 and -1 for Exit\n");
+                        printf("\nEnter Vertices for Edges and -1 and -1 for Exit\n");
                         scanf("%d %d",&i,&j);
                         if(i==-1 && j==-1)
                             break;
-                        printf("Enter distance\n");
+                        printf("Enter distance=>");
                         scanf("%d",&weight);
                         addEdge(graph2, i, j,weight);
                     }

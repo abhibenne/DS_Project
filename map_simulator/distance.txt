@@ -1,0 +1,12 @@
+Distance Graph
+
+Source:0
+Vertex:1	Weight:11	
+Source:1
+Vertex:3	Weight:30	Vertex:2	Weight:34	Vertex:0	Weight:11	
+Source:2
+Vertex:4	Weight:34	Vertex:1	Weight:34	
+Source:3
+Vertex:4	Weight:50	Vertex:1	Weight:30	
+Source:4
+Vertex:2	Weight:34	Vertex:3	Weight:50	

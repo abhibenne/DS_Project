@@ -1,0 +1,12 @@
+Bus Graph
+
+Source:0
+Vertex:1	Weight:10	
+Source:1
+Vertex:2	Weight:20	Vertex:0	Weight:10	
+Source:2
+Vertex:1	Weight:20	
+Source:3
+
+Source:4
+
